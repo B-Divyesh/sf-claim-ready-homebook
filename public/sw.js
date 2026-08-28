@@ -1,5 +1,5 @@
 const CACHE = 'homebook-shell-__BUILD__';
-const SHELL = ['/', '/index.html', '/offline.html', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/assets/evidence-vault-768.webp'];
+const SHELL = ['/', '/index.html', '/offline.html', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png'];
 const BUILD_ASSETS = [];
 
 self.addEventListener('install', event => {

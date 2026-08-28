@@ -26,6 +26,8 @@ Vite prints the local development URL. All runtime assets are local; there are n
 
 ```sh
 npm test
+npm run typecheck
+npm run lint
 npm run build
 npm run test:e2e
 ```
@@ -50,7 +52,7 @@ The app accepts a returned `?license=` token, stores it under `sb_license:claim-
 
 ## Deploy
 
-Publish the contents of `dist/` as a static site. Configure long-lived immutable caching for hashed files under `dist/assets/`, short caching for `index.html` and `sw.js`, and HTTPS so service workers and Web Crypto are available.
+Publish the contents of `dist/` as a static site. `public/staticwebapp.config.json` ships with the build for Azure Static Web Apps: content-fingerprinted files in `dist/assets/` receive `Cache-Control: public, max-age=31536000, immutable`, while the app shell (including `index.html`, route fallbacks, `sw.js`, and `offline.html`) receives `public, max-age=0, must-revalidate`. The production build fails if that policy is absent or an immutable asset is not fingerprinted. Serve over HTTPS so service workers and Web Crypto are available.
 
 The product brief is in [`.factory/brief.json`](.factory/brief.json), the visual system and asset provenance are in [`.factory/design.md`](.factory/design.md), and the build handoff is in [`.factory/handoff.md`](.factory/handoff.md).
 

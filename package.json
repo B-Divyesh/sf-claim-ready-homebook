@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/postbuild.mjs",
+    "build": "vite build && node scripts/postbuild.mjs && node scripts/verify-deployment.mjs",
     "preview": "vite preview",
     "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit",
     "test:e2e": "playwright test",
     "assets": "node scripts/assets.mjs"
   },

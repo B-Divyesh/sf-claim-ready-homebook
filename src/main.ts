@@ -1,4 +1,8 @@
 import './styles.css';
+import evidenceVault1280Avif from './assets/evidence-vault-1280.avif';
+import evidenceVault1280Webp from './assets/evidence-vault-1280.webp';
+import evidenceVault768Avif from './assets/evidence-vault-768.avif';
+import evidenceVault768Webp from './assets/evidence-vault-768.webp';
 import { db } from './db';
 import { createPayload, decryptPayload, encryptPayload, restorePayload } from './crypto';
 import { exportCsv, exportJson, exportPdf } from './exports';
@@ -103,8 +107,8 @@ function heroMarkup(): string {
       <ul class="trust-list"><li>Works offline</li><li>Local by default</li><li>Exports move with you</li></ul>
     </div>
     <picture>
-      <source type="image/avif" srcset="/assets/evidence-vault-768.avif 768w, /assets/evidence-vault-1280.avif 1280w" sizes="(max-width: 760px) 100vw, 52vw">
-      <img src="/assets/evidence-vault-768.webp" srcset="/assets/evidence-vault-768.webp 768w, /assets/evidence-vault-1280.webp 1280w" sizes="(max-width: 760px) 100vw, 52vw" width="768" height="512" alt="An open archive case holding blank evidence cards, a camera, and a small house model at a night-market stall" fetchpriority="high" decoding="async">
+      <source type="image/avif" srcset="${evidenceVault768Avif} 768w, ${evidenceVault1280Avif} 1280w" sizes="(max-width: 760px) 100vw, 52vw">
+      <img src="${evidenceVault768Webp}" srcset="${evidenceVault768Webp} 768w, ${evidenceVault1280Webp} 1280w" sizes="(max-width: 760px) 100vw, 52vw" width="768" height="512" alt="An open archive case holding blank evidence cards, a camera, and a small house model at a night-market stall" fetchpriority="high" decoding="async">
     </picture>
   </section>`;
 }
