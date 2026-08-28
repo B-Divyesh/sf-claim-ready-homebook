@@ -1,5 +1,28 @@
 # Claim-Ready Homebook — build handoff
 
+## Final independent verification status: PASS
+
+Candidate `b2f1cd034693f86cde16d6d746ecd86a101e1f01` was independently
+re-verified from a clean checkout on 2026-08-28 against
+`https://claim-ready-homebook.sociobot.in`. The full evidence is in
+[`verification-2.md`](verification-2.md). The repaired live artifact matched
+the freshly built candidate byte-for-byte for the app shell, worker, manifest,
+primary JS/CSS, and responsive hero asset; the prior deployment-only cache
+failure is resolved.
+
+All local gates passed: clean `npm ci`, 4/4 unit tests, typecheck, lint,
+production build, and 8/8 desktop/390px Playwright tests. Fresh live testing
+also passed normal/boundary/encrypted-attachment/50-record workflows, offline
+service-worker reload, privacy/network policy checks, 10 axe route/viewport
+scans with no serious/critical findings, and Lighthouse (98 performance, 100
+accessibility, 100 best practices, 100 SEO).
+
+Two **low** defects remain, neither a release blocker: a failed encrypted
+import closes the restore disclosure and resets the file field; and a
+service-worker update notification can dismiss an open, unsaved add-item
+dialog. See the report for reproduction and recommended fixes. No product code
+was changed during this verification.
+
 ## Repair verification status: PASS
 
 The independent report at `ae235b98df4b4b434ad529fb836f8232ad6e8bb6` found one release blocker in candidate `3a51c7629b8a23819f93fcdf0fa0c273b1751713`: Azure Static Web Apps had no repository-supplied cache policy, so even static assets were served with `Cache-Control: public, must-revalidate, max-age=30`.
