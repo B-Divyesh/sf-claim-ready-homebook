@@ -1,0 +1,8 @@
+{
+  "model": "factory-image",
+  "date": "2026-08-28",
+  "use_case": "stylized-concept",
+  "prompt": "A quiet night-market documentation stall after rain, viewed as an editorial three-quarter still life. An open rugged household evidence archive case on the right-center contains a compact abstract house silhouette, neatly organized cream receipt slips with no writing, a small unbranded instant camera, blank photo cards, key tag, translucent acrylic dividers, and simple storage tabs. Deep ink-black and navy environment with restrained wet reflections. Cyan tube light from the left, magenta sign light from the right, a small amber practical lamp. Calm, trustworthy, tactile, realistic stylized 3D illustration. Landscape 3:2 with clean dark negative space at upper left.",
+  "negative": "No readable text, letters, logos, brands, watermark, people, hands, fire, flood, disaster imagery, currency, insurance-company imagery, generic gradient, excessive glow, or distorted objects.",
+  "review": "Accepted: coherent case, camera, house silhouette, blank evidence slips, clean anatomy/geometry, no text or brand artifacts."
+}
