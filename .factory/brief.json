@@ -1,0 +1,12 @@
+{
+  "slug": "claim-ready-homebook",
+  "title": "Claim-Ready Homebook",
+  "territory": "utilities",
+  "user": "A renter or homeowner who wants an insurance-ready, portable record of belongings, serials, receipts, and storage locations before a stressful loss.",
+  "smallest_useful_product": "Offline PWA for item photos, value/date/serial/receipt, container and room location, plus an encrypted export that creates a readable PDF/CSV claim packet.",
+  "success_measure": "A pilot user can create an export for 50 items in under ten minutes and open it on a second device without an account.",
+  "artifact_class": "pwa-offline",
+  "monetization": "one-time",
+  "constraints": "Local-only by default; optional encrypted export with user-held passphrase; communicate that insurer requirements and valuations vary.",
+  "non_goals": ["Submitting claims", "Valuation guarantees", "Cloud backup", "Insurance advice"]
+}
