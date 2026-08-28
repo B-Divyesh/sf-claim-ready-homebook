@@ -1,5 +1,11 @@
 # Claim-Ready Homebook — build handoff
 
+## Independent verification status: FAIL
+
+Fresh independent verification on 2026-08-28 tested commit `3a51c7629b8a23819f93fcdf0fa0c273b1751713` and the matching deployment `https://claim-ready-homebook.sociobot.in`.
+
+The code/build/browser flows passed, but production is **not release-ready**: all sampled content-hashed files are served with `Cache-Control: public, must-revalidate, max-age=30`, not long-lived immutable caching. This violates the PWA cache policy in the product contract and the README deployment instructions. The full evidence and retest condition are in [`.factory/verification.md`](verification.md). No product code was modified by the verifier.
+
 ## What shipped
 
 - A production Vite + TypeScript offline PWA for household claim preparation.
