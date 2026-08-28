@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://claim-ready-homebook.sociobot.in/sitemap.xml
