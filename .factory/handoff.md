@@ -1,81 +1,142 @@
-# Claim-Ready Homebook — build handoff
+# Claim-Ready Homebook — repair 2 handoff
 
-## Review 1 status on 5 September 2026: FAIL
+## Release status
 
-The current strict review found **13 findings** and **12 untested public
-claims**. The implementation candidate is
-`28c57edc6c0698b688ffec635c79656045674c7b`; the documentation checkout before
-this report was `692b25273c8b6f1e75597ba661e289c1b51f4ab8`. The live shell, worker,
-manifest, primary JS/CSS, and mobile WebP match the implementation build by
-SHA-256.
+Repair 2 is complete for the static product. Implementation commit
+`7afbed061a9b4a4056d2ee4f7354897d1b0a1a62` was pushed, built from a clean
+checkout, deployed, and verified at
+`https://claim-ready-homebook.sociobot.in` on 5 September 2026. This handoff is
+a later documentation-only change; it does not require another product image.
 
-The free core works: clean build/test gates pass, 50 live records persisted and
-exported in 17.464 seconds, encrypted import retained photo and receipt
-attachments on a fresh mobile context, remove/undo worked, offline reload
-worked, and the initial bundle stayed within budget. Lighthouse scored
-100/100/100/100 on the empty landing route.
+The job is now stated on the first screen: build a home insurance record. The
+audience is renters and homeowners preparing proof before a loss. The first
+action is **Try it with sample data**.
 
-Release is not claim-ready. There is no isolated one-click sample; `/demo`
-reads and writes the normal IndexedDB database. The advertised $19 checkout
-returns HTTP 404. The required claims registry and tagged tests are absent.
-Additional findings cover populated-state contrast, 200% text overflow, focus
-restoration, route titles/headings, the missing 404, landing structure and
-plain language, small touch targets, and incomplete metadata/common site
-structure. Both earlier recovery defects remain reproducible: an update event
-erases an open item draft, and a wrong-passphrase import closes the recovery
-panel and clears the selected file.
+## What changed
 
-The authoritative evidence and retest conditions are in
-[`review-1.md`](review-1.md). No product code was changed during this review.
+- Added a one-click demo at `/demo` with three realistic records. Demo data
+  uses the separate `claim-ready-homebook-demo` IndexedDB database and
+  `demo:` local-storage prefix. A persistent banner labels the sample. Reset
+  restores its seed, and Start for real discards the demo without reading or
+  changing the normal inventory.
+- Removed the advertised purchase and license UI because the production
+  Sociobot product is not registered. The PDF claim packet is now free. The
+  site has no dead checkout, fake payment, or embedded provider credential.
+- Added `.factory/claims.json`. Its ten public claims each have exactly one
+  `@claim:<id>` Playwright test that checks the user-visible outcome from the
+  clean demo, including downloads, encryption, cross-profile recovery,
+  offline reload, request origins, 50-item portability, and undo.
+- Rebuilt the landing page in plain words and the required information order.
+  Added route-specific titles and headings, history/focus handling, common
+  navigation and footer, metadata, social image, sitemap entries, and a
+  designed HTTP 404 response.
+- Kept add-item drafts open when service-worker notices arrive. A failed
+  encrypted import now retains the selected file, open recovery section, and
+  retry path. Dialogs restore focus to their opener.
+- Corrected populated-state contrast, 44 px controls, 200% text layout,
+  reduced-motion behavior, and focus states. Added populated-route axe and
+  keyboard-oriented regression coverage.
+- Hardened backup validation and expanded CSV to include every saved text
+  field. PDF, JSON, CSV, and encrypted export remain available without an
+  account.
+- Updated build dependencies to patched versions. `npm audit` reports zero
+  production or development vulnerabilities.
+- Added `.factory/demo.md`, `.factory/copy-audit.md`, the claim registry, and
+  current run/deploy documentation. The catalog description is verb-first and
+  75 characters long, and is copied to the required evidence location.
 
-## Historical independent verification on 28 August 2026: PASS with known defects
+AI assistance was not added. This is a deterministic record-and-export task,
+and a model call would weaken the offline and local-only behavior without
+improving the core job.
 
-Candidate `b2f1cd034693f86cde16d6d746ecd86a101e1f01` was independently
-re-verified from a clean checkout on 2026-08-28 against
-`https://claim-ready-homebook.sociobot.in`. The full evidence is in
-[`verification-2.md`](verification-2.md). The repaired live artifact matched
-the freshly built candidate byte-for-byte for the app shell, worker, manifest,
-primary JS/CSS, and responsive hero asset; the prior deployment-only cache
-failure is resolved.
+## Review finding disposition
 
-All local gates passed: clean `npm ci`, 4/4 unit tests, typecheck, lint,
-production build, and 8/8 desktop/390px Playwright tests. Fresh live testing
-also passed normal/boundary/encrypted-attachment/50-record workflows, offline
-service-worker reload, privacy/network policy checks, 10 axe route/viewport
-scans with no serious/critical findings, and Lighthouse (98 performance, 100
-accessibility, 100 best practices, 100 SEO).
+| Review 1 finding | Disposition and regression evidence |
+| --- | --- |
+| F01 demo absent and `/demo` changed real data | Fixed. `@claim:demo-isolation` creates real data, changes and resets the sample, returns to normal mode, and inspects both databases. |
+| F02 advertised $19 checkout returned 404 | Fixed honestly. Unregistered paid UI and the broken link were removed; PDF is free. Billing registration remains an external dependency before paid access can be offered. |
+| F03 no claim registry or tagged tests | Fixed. Ten registry entries map one-to-one to ten outcome tests; every declared command passed separately. |
+| F04 populated “No photo” contrast was 4.12:1 | Fixed. Populated demo axe scans report no serious or critical violations on desktop or phone. |
+| F05 horizontal overflow at 200% text | Fixed. The live 390 px phone page remains exactly 390 px wide at 200% text. |
+| F06 dialog and route focus defects | Fixed. Dialog close restores the opener; route changes focus the new heading and announce it. |
+| F07 stale titles and repeated headings | Fixed. Every route has a specific title and one route-specific `h1`; history navigation is covered. |
+| F08 unknown routes returned the app with 200 | Fixed. Unknown public URLs return the styled 404 document with HTTP 404 and a Home link. |
+| F09 landing structure and copy contract missing | Fixed. First screen names the job, audience, action/result, and three facts. `.factory/copy-audit.md` has no sentence over 22 words or banned term. |
+| F10 update event erased an open draft | Fixed. Notices update the live region without rerendering the form; the draft regression passes on both projects. |
+| F11 wrong passphrase closed recovery and lost file | Fixed. The file and disclosure persist, the error is announced, and a corrected retry succeeds. |
+| F12 small touch targets | Fixed. Automated checks cover visible controls at desktop and 390 px widths. |
+| F13 incomplete metadata, common shell, and CSP | Fixed. Canonical/social metadata, 1200×630 product art, icons, headers, sitemap, common shell, and response-header `frame-ancestors` are present. |
 
-Two **low** defects remain, neither a release blocker: a failed encrypted
-import closes the restore disclosure and resets the file field; and a
-service-worker update notification can dismiss an open, unsaved add-item
-dialog. See the report for reproduction and recommended fixes. No product code
-was changed during this verification.
+The earlier immutable-cache repair remains in place and is still checked by
+unit and build-time deployment tests. The two low recovery defects recorded in
+verification 2 are F10 and F11 above and are now closed. The twelve untested
+sentences from review 1 were either consolidated into the ten registered
+claims or removed; the current landing page, application routes, legal pages,
+and README have no unregistered public behavior claim.
 
-## Repair verification status: PASS
+## Clean verification
 
-The independent report at `ae235b98df4b4b434ad529fb836f8232ad6e8bb6` found one release blocker in candidate `3a51c7629b8a23819f93fcdf0fa0c273b1751713`: Azure Static Web Apps had no repository-supplied cache policy, so even static assets were served with `Cache-Control: public, must-revalidate, max-age=30`.
+The final candidate was cloned to a new temporary directory at commit
+`7afbed061a9b4a4056d2ee4f7354897d1b0a1a62`. From that checkout:
 
-Repair commit `28c57edc6c0698b688ffec635c79656045674c7b` adds the Azure Static Web Apps configuration, moves the responsive hero into Vite’s content-fingerprinted asset pipeline, and precaches the emitted image URLs. It was pushed to `main` and deployed to `https://claim-ready-homebook.sociobot.in` on 2026-08-28. Live SHA-256 checks matched local `index.html`, `sw.js`, manifest, primary JS/CSS, and mobile WebP exactly.
+- `npm ci`: passed with the lockfile.
+- `npm audit`: zero vulnerabilities.
+- `npm test`: 5/5 passed.
+- `npm run typecheck`: passed.
+- `npm run lint`: passed.
+- `npm run build`: passed and produced `dist/index.html`.
+- Every command in `.factory/claims.json`: 10/10 passed separately.
+- `npm run test:e2e -- --reporter=line`: 30/30 passed across desktop Chromium
+  and a 390×844 phone viewport.
 
-The regression is covered twice: `src/deployment.test.ts` asserts the immutable/revalidation policy, and `scripts/verify-deployment.mjs` runs as part of `npm run build`, failing the build if the generated deployment config is absent, a shell response can become immutable, or a cacheable JS/CSS/hero asset lacks a fingerprint.
+The outcome suite covers clean demo entry, normal/invalid/boundary paths,
+reload persistence, search, attachments, CSV/JSON/PDF/encrypted downloads,
+wrong-passphrase recovery, cross-profile import, 50 records, remove/undo,
+keyboard focus, route history, reduced motion, 200% text, offline update, and
+populated-state accessibility. The offline claim creates and closes its own
+browser context.
 
-## What shipped
+Production budgets for the initial route are 43.34 KB JavaScript (15.27 KB
+gzip), 20.30 KB CSS (5.46 KB gzip), and a 16.84 KB mobile AVIF hero. PDF
+libraries load only when a PDF is requested.
 
-- A production Vite + TypeScript offline PWA for household claim preparation.
-- IndexedDB inventory records with item name, category, value, purchase date, serial/model, room, container/exact location, notes, photo, and receipt/PDF attachment.
-- Add, edit, search, room filter, completeness gaps, readiness score, currency selection, confirmed removal, and 8-second undo.
-- Local image downscaling before storage; no account, analytics, CDN, cloud storage, or third-party runtime assets.
-- Free CSV, unencrypted JSON, and encrypted `.homebook` exports. Encrypted backups include binary attachments and use PBKDF2-SHA-256 (250,000 iterations) plus AES-256-GCM with random salt/IV.
-- Backup import on another device, with merge-by-ID or explicit replace behavior and clear passphrase/file errors.
-- $19 one-time Claim Pack flow through the Sociobot API contract: hosted checkout, query-token capture and URL cleanup, local license restore, daily-cached verification, offline optimistic unlock, revocation handling, and a photo-rich on-demand PDF builder. Core data and ownership exports remain free.
-- Install manifest, 192/512/maskable icons, versioned app-shell service worker, generated build-asset precache, cache-first offline navigation, offline status, update notice, and standalone-safe layout.
-- Purpose-built night-market neon visual system, original generated evidence-vault hero, original hand-authored mark, responsive desktop/390px layouts, reduced-motion treatment, designed focus states, and semantic routes.
-- `/guide`, `/privacy`, and `/terms`, plus static fallback HTML at those output paths.
+## Live verification
+
+The durable static deployment reused only `sf-claim-ready-homebook` in its
+existing region. The deployed primary JavaScript SHA-256 matches the final
+local build.
+
+- The factory URL verifier returned HTTP 200 with one `h1`, `lang="en"`, a
+  `main` landmark, complete image alternatives, labelled buttons, and no
+  console or page errors.
+- Fresh 1440×1000 desktop and 390×844 phone contexts identified the job,
+  audience, and first action before scrolling.
+- The sample opened with three records and the persistent demo label. A sample
+  change and reset worked, Start for real returned to the unchanged normal
+  record, and all observed requests stayed on the product origin.
+- `/demo`, `/export`, `/guide`, `/privacy`, and `/terms` returned 200 with
+  distinct titles, one `h1`, and zero serious or critical axe findings.
+- An unknown route returned HTTP 404 with the designed page. CSP,
+  `frame-ancestors`, referrer, permissions, HSTS, and `nosniff` headers are
+  present.
+- After service-worker control, the demo reloaded offline with its three
+  records and visible offline state. Reduced-motion transitions were
+  effectively instant. The phone page had no horizontal overflow at 200%
+  text.
+- Final mobile Lighthouse 12.8.2: Performance **100**, Accessibility **100**,
+  Best Practices **100**, SEO **100**; FCP **0.905 s**, LCP **1.055 s**, TBT
+  **0 ms**, CLS **0**.
+
+Live JSON, screenshots, verifier output, Lighthouse JSON, and sequential claim
+output are under `/work/.evidence/homebook-live/` and
+`/work/.evidence/final-claim-results.txt`. The catalog description is also at
+`/work/.evidence/catalog-description.txt`.
 
 ## Run and verify
 
 ```sh
 npm ci
+npm audit
 npm test
 npm run typecheck
 npm run lint
@@ -83,39 +144,31 @@ npm run build
 npm run test:e2e
 ```
 
-Production output is exactly `dist/`, with `dist/index.html` at its root. Staging billing can be built with `VITE_BILLING_BASE=https://pilot-api.sociobot.in npm run build`; production defaults to `https://api.sociobot.in`.
-
-Repair verification completed 28 August 2026:
-
-- Clean `npm ci` completed. `npm audit --omit=dev`: **0 production vulnerabilities**.
-- `npm test`: **4/4** tests passed, including the new static deployment cache-policy regression.
-- `npm run typecheck` and `npm run lint` (strict TypeScript static analysis): passed.
-- `npm run build`: passed, produced `dist/` with `dist/index.html`, and passed the generated-deployment guard.
-- `npm run test:e2e`: 8/8 passed using Playwright 1.58.2 on desktop Chromium and a 390×844 mobile Chromium viewport.
-- Browser coverage includes create/persist/filter, CSV download, encrypted export, decrypt/import into a fresh browser context, PDF download with cached license, automated axe scan, no console errors, and explicit `context.setOffline(true)` reload after service-worker installation.
-- Live `/opt/fleet/lib/verify-url.sh`: HTTP 200, title and `lang` present, exactly one `<h1>`, main landmark present, 0 missing image alts, 0 unlabelled buttons, 0 console/page errors.
-- Live desktop 1440×1000 and mobile 390×844 scans of `/`, `/export`, `/guide`, `/privacy`, and `/terms`: 0 serious/critical Axe findings and 0 console/page errors. The first Tab reaches the `#main` skip link with a 3px outline; no keyboard trap was found.
-- Live PWA: manifest has the expected name, short name, standalone display, start URL, and three icons; after service-worker control, an offline reload still shows the main content and offline status. The worker is versioned and retains `skipWaiting`, `clients.claim`, and its update-ready message.
-- Live privacy/response policy: the exercised app requested only `https://claim-ready-homebook.sociobot.in`; there are no CDN assets or analytics. HTTPS responses include HSTS, `nosniff`, and strict-origin referrer policy; the document CSP restricts connections to self plus the documented Sociobot billing origins.
-- Live cache headers: `/assets/index-BcpFcm3D.js`, `/assets/index-Ck3cpOxH.css`, and `/assets/evidence-vault-768-BnAfQkuy.webp` return `public, max-age=31536000, immutable`; `/`, `/export`, `sw.js`, and `offline.html` return `public, max-age=0, must-revalidate`.
-- Lighthouse 13.4.1 on the repaired live URL: Performance **100**, Accessibility **100**, Best Practices **100**, SEO **100**; FCP **0.9s**, LCP **1.1s**, TBT **0ms**, CLS **0**.
-- Production sizes: initial application JS **38.26 KB** (**14.14 KB gzip**), CSS **17.63 KB** (**4.98 KB gzip**), mobile AVIF hero **17 KB**, mobile WebP fallback **28 KB**. The larger PDF libraries are dynamically loaded only when an unlocked user builds a PDF. There is no package/consumer artifact beyond this static PWA.
-
-Local reports and screenshots were generated under `.factory/evidence/` and intentionally ignored from git. The app was visually reviewed at 1440×1000 and 390×844.
+To verify a claim exactly, run its `test` command from
+`.factory/claims.json`. Production output is `dist/`, with `index.html` at its
+root.
 
 ## Asset provenance
 
-The hero source is `assets/src/evidence-vault.png`; its full prompt/review is in `assets/src/evidence-vault.prompt.json` and the generator response metadata is beside it. It was generated on 28 August 2026 with the factory Azure image deployment through `/opt/fleet/lib/gen-image.sh`, reviewed for text/brand/anatomy artifacts, then converted locally to responsive AVIF and WebP. The responsive derivatives now live under `src/assets/` so Vite emits content-fingerprinted filenames; the shipped mobile variants are below the 300 KB budget. The PWA mark is the project-authored `assets/src/homebook-mark.svg`. Full art direction and licensing are in `.factory/design.md`.
+The evidence-vault hero is the existing product-original generated asset from
+28 August 2026. Its source, prompt, generator metadata, review notes, and
+license are recorded in `assets/src/` and `.factory/design.md`. The social
+image is a deterministic 1200×630 crop of that reviewed source. The PWA mark
+is hand-authored for this product. No new model generation was needed during
+this repair.
 
-## Known gaps and release notes
+## Known gaps and dependencies
 
-- The factory must register `claim-ready-homebook` with Sociobot billing and configure its return URL before a real purchase can complete. No product ID or payment-provider credential is embedded here.
-- Insurer requirements and valuation rules differ; the UI and PDF state this explicitly. Homebook does not submit claims or guarantee acceptance.
-- Data has no cloud copy by design. Users must move an encrypted export off the original device and retain its passphrase.
-- Automated browser coverage is Chromium-based. The implementation uses evergreen Web APIs and should receive a final physical-device smoke test on iOS Safari before a broad launch.
-- `npm audit` including development-only build/test tools reports 3 advisories (two high and one critical); the production-only audit is clean. They are not shipped in the static runtime.
-
-## Suggested next steps
-
-1. Register the production and staging billing products and run the hosted checkout return flow with a real test license.
-2. Run one physical iPhone install/camera/file-import smoke test and one Android install/offline smoke test.
+- Sociobot billing registration is absent. Paid access must not be advertised
+  until the product is registered and its real hosted checkout and return flow
+  are tested. The current free product is complete without it.
+- Insurer rules and valuation methods vary. Homebook does not submit claims,
+  confirm values, provide insurance advice, or guarantee acceptance.
+- Local browser storage has no cloud copy by design. Users must keep an
+  encrypted backup elsewhere and retain its passphrase.
+- Automated browser coverage uses Chromium. A physical iOS Safari and Android
+  install/camera/file-import smoke test remains advisable before a broad
+  launch; no physical-hardware result is claimed here.
+- The referenced `/work/.evidence/qa-result.json` was not present in the
+  worker filesystem. The repository's complete review and verification
+  reports through `ddd1d83` were available, read, and dispositioned above.
