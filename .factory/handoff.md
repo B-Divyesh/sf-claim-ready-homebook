@@ -1,6 +1,34 @@
 # Claim-Ready Homebook — build handoff
 
-## Final independent verification status: PASS
+## Review 1 status on 5 September 2026: FAIL
+
+The current strict review found **13 findings** and **12 untested public
+claims**. The implementation candidate is
+`28c57edc6c0698b688ffec635c79656045674c7b`; the documentation checkout before
+this report was `692b25273c8b6f1e75597ba661e289c1b51f4ab8`. The live shell, worker,
+manifest, primary JS/CSS, and mobile WebP match the implementation build by
+SHA-256.
+
+The free core works: clean build/test gates pass, 50 live records persisted and
+exported in 17.464 seconds, encrypted import retained photo and receipt
+attachments on a fresh mobile context, remove/undo worked, offline reload
+worked, and the initial bundle stayed within budget. Lighthouse scored
+100/100/100/100 on the empty landing route.
+
+Release is not claim-ready. There is no isolated one-click sample; `/demo`
+reads and writes the normal IndexedDB database. The advertised $19 checkout
+returns HTTP 404. The required claims registry and tagged tests are absent.
+Additional findings cover populated-state contrast, 200% text overflow, focus
+restoration, route titles/headings, the missing 404, landing structure and
+plain language, small touch targets, and incomplete metadata/common site
+structure. Both earlier recovery defects remain reproducible: an update event
+erases an open item draft, and a wrong-passphrase import closes the recovery
+panel and clears the selected file.
+
+The authoritative evidence and retest conditions are in
+[`review-1.md`](review-1.md). No product code was changed during this review.
+
+## Historical independent verification on 28 August 2026: PASS with known defects
 
 Candidate `b2f1cd034693f86cde16d6d746ecd86a101e1f01` was independently
 re-verified from a clean checkout on 2026-08-28 against
