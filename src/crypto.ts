@@ -42,6 +42,14 @@ export function restorePayload(payload: BackupPayload): HomeItem[] {
   if (payload.format !== 'claim-ready-homebook' || payload.version !== 1 || !Array.isArray(payload.items)) {
     throw new Error('This is not a supported Homebook backup.');
   }
+  const requiredStrings: (keyof PortableItem)[] = ['id', 'name', 'category', 'room', 'container', 'purchaseDate', 'serial', 'notes', 'createdAt', 'updatedAt'];
+  const valid = payload.items.every(item => item && typeof item === 'object'
+    && requiredStrings.every(key => typeof item[key] === 'string')
+    && item.name.trim().length > 0
+    && (item.value === null || (typeof item.value === 'number' && Number.isFinite(item.value) && item.value >= 0 && item.value <= 100_000_000))
+    && (!item.photo || (typeof item.photo.type === 'string' && typeof item.photo.data === 'string'))
+    && (!item.receipt || (typeof item.receipt.type === 'string' && typeof item.receipt.data === 'string')));
+  if (!valid) throw new Error('This backup contains an invalid item record. Export the file again from Homebook.');
   return payload.items.map(item => ({
     ...item,
     photo: item.photo ? portableToBlob(item.photo) : undefined,

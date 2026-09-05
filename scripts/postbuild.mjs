@@ -14,7 +14,7 @@ const worker = (await readFile(workerUrl, 'utf8'))
   .replace('const BUILD_ASSETS = [];', `const BUILD_ASSETS = ${JSON.stringify(builtAssets)};`);
 await writeFile(workerUrl, worker);
 
-for (const route of ['export', 'guide', 'privacy', 'terms']) {
+for (const route of ['demo', 'export', 'guide', 'privacy', 'terms']) {
   await mkdir(new URL(`../dist/${route}/`, import.meta.url), { recursive: true });
   await cp(indexUrl, new URL(`../dist/${route}/index.html`, import.meta.url));
 }

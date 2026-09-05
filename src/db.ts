@@ -1,6 +1,5 @@
 import type { HomeItem } from './types';
 
-const DB_NAME = 'claim-ready-homebook';
 const STORE = 'items';
 const VERSION = 1;
 
@@ -19,12 +18,12 @@ function transactionDone(transaction: IDBTransaction): Promise<void> {
   });
 }
 
-class HomebookDB {
+export class HomebookDB {
   private database: Promise<IDBDatabase>;
 
-  constructor() {
+  constructor(databaseName: string) {
     this.database = new Promise((resolve, reject) => {
-      const open = indexedDB.open(DB_NAME, VERSION);
+      const open = indexedDB.open(databaseName, VERSION);
       open.onupgradeneeded = () => {
         if (!open.result.objectStoreNames.contains(STORE)) {
           const store = open.result.createObjectStore(STORE, { keyPath: 'id' });
@@ -66,5 +65,3 @@ class HomebookDB {
     await transactionDone(transaction);
   }
 }
-
-export const db = new HomebookDB();

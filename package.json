@@ -1,6 +1,6 @@
 {
   "name": "claim-ready-homebook",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "tsc --noEmit",
     "test:e2e": "playwright test",
+    "test:claims": "playwright test tests/claims.spec.ts --project=chromium",
     "assets": "node scripts/assets.mjs"
   },
   "dependencies": {

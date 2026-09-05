@@ -1,5 +1,5 @@
 const CACHE = 'homebook-shell-__BUILD__';
-const SHELL = ['/', '/index.html', '/offline.html', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png'];
+const SHELL = ['/', '/index.html', '/demo', '/export', '/guide', '/privacy', '/terms', '/offline.html', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/icon-maskable-512.png', '/apple-touch-icon.png'];
 const BUILD_ASSETS = [];
 
 self.addEventListener('install', event => {

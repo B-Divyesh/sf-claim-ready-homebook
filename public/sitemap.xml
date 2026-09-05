@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://claim-ready-homebook.sociobot.in/</loc></url>
+  <url><loc>https://claim-ready-homebook.sociobot.in/demo</loc></url>
+  <url><loc>https://claim-ready-homebook.sociobot.in/export</loc></url>
   <url><loc>https://claim-ready-homebook.sociobot.in/guide</loc></url>
   <url><loc>https://claim-ready-homebook.sociobot.in/privacy</loc></url>
   <url><loc>https://claim-ready-homebook.sociobot.in/terms</loc></url>

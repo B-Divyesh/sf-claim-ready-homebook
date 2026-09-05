@@ -2,12 +2,13 @@ import type { HomeItem } from './types';
 import { createPayload } from './crypto';
 import { csvCell, download, money, todayStamp } from './utils';
 
-const HEADERS = ['Item', 'Category', 'Room', 'Container', 'Estimated value', 'Purchase date', 'Serial/model', 'Photo', 'Receipt', 'Notes', 'Last updated'];
+const HEADERS = ['Record ID', 'Item', 'Category', 'Room', 'Container', 'Estimated value', 'Currency', 'Purchase date', 'Serial/model', 'Photo filename', 'Receipt filename', 'Notes', 'Created', 'Last updated'];
 
 export function exportCsv(items: HomeItem[], currency: string): void {
   const rows = items.map(item => [
-    item.name, item.category, item.room, item.container, item.value ?? '', item.purchaseDate, item.serial,
-    item.photo ? 'Attached in Homebook backup' : '', item.receiptName ?? (item.receipt ? 'Attached' : ''), item.notes, item.updatedAt
+    item.id, item.name, item.category, item.room, item.container, item.value ?? '', currency, item.purchaseDate, item.serial,
+    item.photoName ?? (item.photo ? 'Attached in Homebook backup' : ''), item.receiptName ?? (item.receipt ? 'Attached' : ''),
+    item.notes, item.createdAt, item.updatedAt
   ]);
   const csv = '\uFEFF' + [
     [`Claim-Ready Homebook export (${currency})`],
@@ -40,6 +41,11 @@ export async function exportPdf(items: HomeItem[], currency: string, onProgress:
   onProgress('Preparing the PDF engine…');
   const { jsPDF } = await import('jspdf');
   const pdf = new jsPDF({ unit: 'pt', format: 'a4', compress: true });
+  pdf.setProperties({
+    title: 'Household claim packet',
+    subject: `Item index and evidence details for ${items.length} ${items.length === 1 ? 'record' : 'records'}`,
+    creator: 'Claim-Ready Homebook'
+  });
   const width = pdf.internal.pageSize.getWidth();
   const height = pdf.internal.pageSize.getHeight();
   const margin = 44;

@@ -42,11 +42,4 @@ export interface EncryptedBackup {
   ciphertext: string;
 }
 
-export type Route = 'inventory' | 'export' | 'guide' | 'privacy' | 'terms';
-
-export interface LicenseState {
-  token: string | null;
-  valid: boolean;
-  checking: boolean;
-  notice: string;
-}
+export type Route = 'inventory' | 'export' | 'guide' | 'privacy' | 'terms' | 'notFound';
