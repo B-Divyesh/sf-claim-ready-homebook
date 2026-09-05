@@ -1,0 +1,72 @@
+[
+  {
+    "id": "demo-isolation",
+    "claim": "The sample opens with three records, uses separate storage, resets, and never changes the normal inventory.",
+    "where": "landing first screen, demo banner, privacy page, README",
+    "test": "npm run test:claims -- --grep @claim:demo-isolation",
+    "sandbox": "fresh browser context; create a real record; enter /demo; change and reset sample; return to real inventory; inspect both IndexedDB stores"
+  },
+  {
+    "id": "offline-reload",
+    "claim": "The demo reloads and exports a CSV offline after the first visit.",
+    "where": "landing facts, connection status, README",
+    "test": "npm run test:claims -- --grep @claim:offline-reload",
+    "sandbox": "dedicated fresh browser context; load /demo; wait for service-worker control; set the context offline; reload and export"
+  },
+  {
+    "id": "local-only",
+    "claim": "Records stay in the browser, with no account, analytics, tracking, CDN, or cloud inventory request.",
+    "where": "landing facts, privacy page, footer, README",
+    "test": "npm run test:claims -- --grep @claim:local-only",
+    "sandbox": "fresh /demo context; edit and reload a record; record every request origin; check that no account control exists"
+  },
+  {
+    "id": "csv-export",
+    "claim": "CSV export has one row per record and every saved text field.",
+    "where": "landing, export page, README",
+    "test": "npm run test:claims -- --grep @claim:csv-export",
+    "sandbox": "fresh /demo context; download CSV; assert header fields, sample values, and exact row count"
+  },
+  {
+    "id": "inventory-records",
+    "claim": "The inventory stores item details, photos, receipts, and locations, shows missing evidence, persists after reload, and supports search.",
+    "where": "landing, inventory, guide, README",
+    "test": "npm run test:claims -- --grep @claim:inventory-records",
+    "sandbox": "fresh /demo context; add a complete item with photo and receipt; reload; verify its fields and completeness; search by serial number"
+  },
+  {
+    "id": "json-export",
+    "claim": "JSON export carries every record, photo, and receipt attachment.",
+    "where": "landing, export page, privacy page, README",
+    "test": "npm run test:claims -- --grep @claim:json-export",
+    "sandbox": "fresh /demo context; download JSON; parse it and assert three records plus named binary attachment data"
+  },
+  {
+    "id": "encrypted-backup",
+    "claim": "Encrypted backups carry records and attachments, reject a wrong passphrase, never store it, and use PBKDF2-SHA-256 with 250,000 iterations plus AES-256-GCM with random salt and IV.",
+    "where": "export page, privacy page, README",
+    "test": "npm run test:claims -- --grep @claim:encrypted-backup",
+    "sandbox": "fresh /demo context; compare two exports; inspect algorithms and byte lengths; inspect storage; test failed retry state; import on a second profile"
+  },
+  {
+    "id": "pdf-export",
+    "claim": "The free PDF export has an item index, evidence details, locations, one item page per record, and a photo when present.",
+    "where": "landing, export page, terms, README",
+    "test": "npm run test:claims -- --grep @claim:pdf-export",
+    "sandbox": "fresh /demo context without a license or payment; download PDF; inspect signature, page tree, embedded image, and size"
+  },
+  {
+    "id": "fifty-item-portability",
+    "claim": "A 50-item encrypted export opens in another browser profile without an account in under ten minutes.",
+    "where": "README success check",
+    "test": "npm run test:claims -- --grep @claim:fifty-item-portability",
+    "sandbox": "fresh /demo context; add records through the UI to reach 50; encrypt; import into a second browser context; assert count and elapsed time"
+  },
+  {
+    "id": "remove-undo",
+    "claim": "A removed item can be restored immediately with Undo.",
+    "where": "remove confirmation, README",
+    "test": "npm run test:claims -- --grep @claim:remove-undo",
+    "sandbox": "fresh /demo context; confirm removal; assert count drops; activate Undo; assert count returns"
+  }
+]

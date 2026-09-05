@@ -1,26 +1,25 @@
 # Claim-Ready Homebook
 
-Claim-Ready Homebook is a private, offline-first household inventory for renters and homeowners. It keeps item photos, receipt files, values, dates, serials, room locations, and container locations together before a stressful loss. Records stay in the browser; no account or cloud catalogue is required.
+Build a private home inventory before an insurance loss. Claim-Ready Homebook is for renters and homeowners who need portable records of belongings and proof.
 
-The app creates:
+It stores values, serial numbers, photos, receipts, rooms, and storage places.
 
-- a free CSV claim list;
-- a free unencrypted JSON backup for inspection;
-- a free AES-GCM encrypted `.homebook` backup containing records and attachments;
-- a photo-rich PDF claim packet with the one-time Claim Pack unlock.
+Try the isolated sample at `/demo`. It starts with three records, stays separate from the normal inventory, and needs no account.
 
-It does not submit insurance claims, guarantee values or coverage, provide cloud backup, or give insurance advice.
+The app exports CSV, JSON, an encrypted `.homebook` backup, and a PDF claim packet. It does not submit claims, confirm values, provide cloud backup, or guarantee that an insurer accepts evidence.
+
+All current exports are free. Paid checkout is not offered because the billing product is not registered.
 
 ## Run locally
 
-Requires Node.js 20 or later.
+Use Node.js 20 or later.
 
 ```sh
-npm install
+npm ci
 npm run dev
 ```
 
-Vite prints the local development URL. All runtime assets are local; there are no CDN fonts, scripts, analytics, or advertising.
+Vite prints the local URL. Open `/demo` for the sample.
 
 ## Test and build
 
@@ -29,33 +28,34 @@ npm test
 npm run typecheck
 npm run lint
 npm run build
+npm run test:claims
 npm run test:e2e
 ```
 
-`npm run build` is the production build command. It writes the static deployment to `dist/`, with `dist/index.html` at the root and route fallbacks for `/export`, `/guide`, `/privacy`, and `/terms`.
+Playwright is pinned to 1.58.2. The browser tests cover desktop Chromium and a 390 × 844 mobile viewport. Claim tests run from the isolated demo in a fresh Chromium context.
 
-Playwright is pinned to 1.58.2. The end-to-end suite checks the main workflow on desktop Chromium and a 390px mobile viewport, encrypted backup recovery, PDF/CSV downloads, serious accessibility findings, console errors, persistence, and an offline reload.
+Every public product claim is listed in [`.factory/claims.json`](.factory/claims.json). Each entry names one tagged command that checks the user-visible result. The 50-item check creates records through the interface, exports an encrypted backup, and imports it in another browser profile within ten minutes.
 
 ## Data and encryption
 
-Inventory records and binary attachments use IndexedDB. Encryption happens locally with Web Crypto: PBKDF2-SHA-256 (250,000 iterations, random 16-byte salt) derives an AES-256-GCM key with a random 12-byte IV. Passphrases are never stored and cannot be recovered. An encrypted export is only a backup after it has been copied away from the original device and tested.
+Normal records use the `claim-ready-homebook` IndexedDB database. Demo records use `claim-ready-homebook-demo`. **Start for real** clears demo records before opening the normal inventory.
 
-## Paid unlock configuration
+Encryption runs in the browser. PBKDF2-SHA-256 uses 250,000 iterations, a random 16-byte salt, and a user passphrase to derive an AES-256-GCM key. Each export has a random 12-byte IV. The passphrase is never stored and cannot be recovered.
 
-Claim Pack uses Sociobot billing only. The product slug is the repository slug, not a hard-coded billing product ID. Production defaults to `https://api.sociobot.in`; staging can override it at build time:
-
-```sh
-VITE_BILLING_BASE=https://pilot-api.sociobot.in npm run build
-```
-
-The app accepts a returned `?license=` token, stores it under `sb_license:claim-ready-homebook`, strips it from the URL, and verifies at most daily. Core inventory and portable data exports are free.
+The app has no account, analytics, advertising, CDN assets, or cloud inventory service. See the in-app `/privacy` and `/terms` pages.
 
 ## Deploy
 
-Publish the contents of `dist/` as a static site. `public/staticwebapp.config.json` ships with the build for Azure Static Web Apps: content-fingerprinted files in `dist/assets/` receive `Cache-Control: public, max-age=31536000, immutable`, while the app shell (including `index.html`, route fallbacks, `sw.js`, and `offline.html`) receives `public, max-age=0, must-revalidate`. The production build fails if that policy is absent or an immutable asset is not fingerprinted. Serve over HTTPS so service workers and Web Crypto are available.
+```sh
+npm run build
+```
 
-The product brief is in [`.factory/brief.json`](.factory/brief.json), the visual system and asset provenance are in [`.factory/design.md`](.factory/design.md), and the build handoff is in [`.factory/handoff.md`](.factory/handoff.md).
+Publish `dist/` as the static site root. The build creates physical route files for `/demo`, `/export`, `/guide`, `/privacy`, and `/terms`. Azure Static Web Apps uses `404.html` for a real 404 response.
+
+The included deployment config sends the CSP and `frame-ancestors` as response headers. Fingerprinted assets receive one-year immutable caching. HTML, the service worker, and other shell files revalidate.
+
+The product brief is in [`.factory/brief.json`](.factory/brief.json). The visual system and asset provenance are in [`.factory/design.md`](.factory/design.md). Demo behavior is in [`.factory/demo.md`](.factory/demo.md).
 
 ## License
 
-MIT — see [`LICENSE`](LICENSE).
+MIT. See [`LICENSE`](LICENSE).

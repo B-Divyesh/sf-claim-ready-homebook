@@ -1,21 +1,25 @@
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-test('adds, persists, filters, and removes an inventory record', async ({ page }) => {
+async function addItem(page: import('@playwright/test').Page, name: string, value = '1250') {
+  const first = page.getByRole('button', { name: 'Add your first item' });
+  if (await first.isVisible().catch(() => false)) await first.click();
+  else await page.getByRole('button', { name: 'Add an item', exact: true }).click();
+  const dialog = page.getByRole('dialog');
+  await dialog.getByLabel('Item name').fill(name);
+  await dialog.getByLabel(/Estimated value/).fill(value);
+  await dialog.getByLabel('Serial or model').fill('CAM-4829');
+  await dialog.getByLabel('Room', { exact: true }).fill('Office');
+  await dialog.getByLabel('Container or exact spot').fill('Locked cabinet');
+  await dialog.getByRole('button', { name: 'Add item', exact: true }).click();
+}
+
+test('adds, validates, persists, filters, removes, and restores a record', async ({ page }) => {
   const errors: string[] = [];
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
   await page.goto('/');
-  await expect(page.locator('h1')).toHaveCount(1);
-  await expect(page.getByRole('heading', { name: /Turn a roomful/ })).toBeVisible();
-  await page.getByRole('button', { name: 'Add your first item' }).click();
-  await page.getByLabel('Item name').fill('Mirrorless camera');
-  await page.getByLabel('Category').selectOption('Electronics');
-  await page.getByLabel(/Estimated value/).fill('1250');
-  await page.getByLabel('Purchase date').fill('2025-06-10');
-  await page.getByLabel('Serial or model').fill('CAM-4829');
-  await page.getByRole('combobox', { name: 'Room', exact: true }).fill('Office');
-  await page.getByLabel('Container or exact spot').fill('Locked cabinet');
-  await page.getByRole('button', { name: 'Add item', exact: true }).last().click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Build your home insurance record' })).toBeVisible();
+  await addItem(page, 'Mirrorless camera', '0');
   await expect(page.getByRole('heading', { name: 'Mirrorless camera' })).toBeVisible();
   await page.reload();
   await expect(page.getByText('CAM-4829')).toBeVisible();
@@ -23,69 +27,89 @@ test('adds, persists, filters, and removes an inventory record', async ({ page }
   await page.getByRole('button', { name: 'Apply filters' }).click();
   await expect(page.getByRole('heading', { name: 'No records match' })).toBeVisible();
   await page.getByRole('button', { name: 'Clear filters' }).click();
+  page.once('dialog', dialog => dialog.accept());
+  await page.getByRole('button', { name: 'Remove' }).click();
+  await expect(page.getByText('Mirrorless camera removed.')).toBeVisible();
+  await page.getByRole('button', { name: 'Undo' }).click();
   await expect(page.getByRole('heading', { name: 'Mirrorless camera' })).toBeVisible();
   expect(errors).toEqual([]);
 });
 
-test('exports CSV, PDF, and an encrypted backup that reopens', async ({ page, browser }) => {
-  await page.goto('/');
-  if (await page.getByRole('heading', { name: /Turn a roomful/ }).isVisible()) {
-    await page.getByRole('button', { name: 'Add your first item' }).click();
-    await page.getByLabel('Item name').fill('Oak desk');
-    await page.getByRole('button', { name: 'Add item', exact: true }).last().click();
-    await expect(page.getByRole('dialog')).toBeHidden();
-  }
-  await page.getByRole('link', { name: 'Export', exact: true }).click();
-  const csvDownload = page.waitForEvent('download');
-  await page.getByRole('button', { name: 'Export CSV' }).click();
-  expect((await csvDownload).suggestedFilename()).toContain('homebook-claim-list');
-  await page.getByLabel('Passphrase', { exact: false }).first().fill('portable-proof-2026');
-  await page.getByText('I understand this passphrase cannot be recovered.').click();
-  const backupDownload = page.waitForEvent('download');
-  await page.getByRole('button', { name: 'Download encrypted backup' }).click();
-  const backup = await backupDownload;
-  expect(backup.suggestedFilename()).toContain('.homebook');
-  const backupPath = await backup.path();
-  expect(backupPath).toBeTruthy();
-
-  await page.evaluate(() => {
-    localStorage.setItem('sb_license:claim-ready-homebook', 'test-license');
-    localStorage.setItem('sb_license_verdict:claim-ready-homebook', JSON.stringify({ valid: true, checkedAt: Date.now() }));
-  });
-  await page.reload();
-  const pdfDownload = page.waitForEvent('download');
-  await page.getByRole('button', { name: 'Build claim PDF' }).click();
-  expect((await pdfDownload).suggestedFilename()).toContain('.pdf');
-
-  const secondDevice = await browser.newContext();
-  const secondPage = await secondDevice.newPage();
-  await secondPage.goto('/export');
-  await secondPage.getByText('Move or restore a homebook').click();
-  await secondPage.getByLabel('Backup file').setInputFiles(backupPath!);
-  await secondPage.getByLabel('Passphrase', { exact: false }).last().fill('portable-proof-2026');
-  await secondPage.getByRole('button', { name: 'Import backup' }).click();
-  await expect(secondPage.getByText(/Imported 1 record/)).toBeVisible();
-  await secondPage.getByRole('link', { name: 'Inventory', exact: true }).click();
-  await expect(secondPage.getByRole('heading', { name: 'Oak desk' })).toBeVisible();
-  await secondDevice.close();
-});
-
-test('has no serious accessibility violations', async ({ page }) => {
-  await page.goto('/privacy');
-  const results = await new AxeBuilder({ page }).analyze();
-  expect(results.violations.filter(violation => ['serious', 'critical'].includes(violation.impact || ''))).toEqual([]);
-});
-
-test('reloads offline after the service worker has installed', async ({ page, context }) => {
+test('restores focus and keeps a draft when an update notice arrives', async ({ page }) => {
   await page.goto('/');
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
     if (!navigator.serviceWorker.controller) await new Promise<void>(resolve => navigator.serviceWorker.addEventListener('controllerchange', () => resolve(), { once: true }));
   });
   await page.reload();
-  await expect(page.locator('main')).toBeVisible();
-  await context.setOffline(true);
-  await page.reload();
-  await expect(page.locator('main')).toBeVisible();
-  await expect(page.getByText(/Offline • records still available/)).toBeVisible();
+  const opener = page.getByRole('button', { name: 'Add your first item' });
+  await opener.click();
+  const name = page.getByLabel('Item name');
+  await name.fill('Unsaved television draft');
+  await page.evaluate(() => navigator.serviceWorker.dispatchEvent(new MessageEvent('message', { data: { type: 'UPDATE_READY' } })));
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect(name).toHaveValue('Unsaved television draft');
+  await page.keyboard.press('Escape');
+  await expect(opener).toBeFocused();
+});
+
+test('updates route titles, headings, history focus, and unknown-route content', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Export', exact: true }).click();
+  await expect(page).toHaveTitle('Export home records — Claim-Ready Homebook');
+  await expect(page.locator('h1')).toHaveText('Export your home records');
+  await page.goBack();
+  await expect(page).toHaveTitle('Claim-Ready Homebook — Build a home inventory');
+  await expect(page.locator('h1')).toBeFocused();
+  await page.goto('/definitely-missing-review-path');
+  await expect(page).toHaveTitle('Page not found — Claim-Ready Homebook');
+  await expect(page.getByRole('heading', { level: 1, name: 'Page not found' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Return to your inventory' })).toBeVisible();
+});
+
+test('has accessible populated routes, touch targets, reduced motion, and 200 percent text resize', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const path of ['/demo', '/export?demo=1', '/guide', '/privacy', '/terms']) {
+    await page.goto(path);
+    await expect(page.locator('h1')).toHaveCount(1);
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations.filter(violation => ['serious', 'critical'].includes(violation.impact || '')), path).toEqual([]);
+  }
+  await page.goto('/demo');
+  for (const name of ['Edit', 'Remove']) {
+    const box = await page.getByRole('button', { name, exact: true }).first().boundingBox();
+    expect(box?.height).toBeGreaterThanOrEqual(44);
+    expect(box?.width).toBeGreaterThanOrEqual(44);
+  }
+  const termsBox = await page.getByRole('link', { name: 'Terms', exact: true }).boundingBox();
+  expect(termsBox?.height).toBeGreaterThanOrEqual(44);
+  expect(termsBox?.width).toBeGreaterThanOrEqual(44);
+  await page.addStyleTag({ content: ':root { font-size: 32px !important; }' });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  expect(await page.locator('.button').first().evaluate(element => parseFloat(getComputedStyle(element).transitionDuration))).toBeLessThanOrEqual(0.00001);
+});
+
+test('accepts the documented value boundaries and rejects values outside them', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Add your first item' }).click();
+  const dialog = page.getByRole('dialog');
+  const name = dialog.getByLabel('Item name');
+  expect(await name.evaluate((input: HTMLInputElement) => input.checkValidity())).toBe(false);
+  await name.fill('Boundary item');
+  const value = dialog.getByLabel(/Estimated value/);
+  for (const accepted of ['0', '100000000']) {
+    await value.fill(accepted);
+    expect(await value.evaluate((input: HTMLInputElement) => input.checkValidity())).toBe(true);
+  }
+  for (const rejected of ['-0.01', '100000000.01']) {
+    await value.fill(rejected);
+    expect(await value.evaluate((input: HTMLInputElement) => input.checkValidity())).toBe(false);
+  }
+  await page.keyboard.press('Escape');
+  await page.getByRole('link', { name: 'Demo' }).click();
+  await page.getByRole('link', { name: 'Export', exact: true }).click();
+  const passphrase = page.getByLabel('Passphrase', { exact: false }).first();
+  await passphrase.fill('ninechars');
+  expect(await passphrase.evaluate((input: HTMLInputElement) => input.checkValidity())).toBe(false);
 });

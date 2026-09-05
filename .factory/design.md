@@ -67,6 +67,12 @@ Using system families keeps the installed app fast and private while retaining a
 2. **Homebook mark and PWA icons** — original hand-authored geometric mark: a roof line closing into an archive drawer with a cyan evidence tab. Rasterized locally for manifest sizes. MIT project asset.
 3. **Interface icons** — hand-authored inline SVG strokes using the same squared geometry. Decorative icons are hidden from assistive tech; labelled actions retain visible text.
 
+The 1200 × 630 social card is a deterministic crop of the reviewed `evidence-vault.png` source, produced locally with Sharp. The 180 px Apple touch icon is rasterized from the hand-authored Homebook SVG mark. No new model output or third-party asset was added for the repair.
+
+## Repair language and page structure
+
+Version 1.1 keeps the single-mode night-market palette but removes metaphorical interface headings. Page headings now name the task directly. The home route follows the shared product order: job and audience, one-click demo, product preview, three steps, limits, then the common footer. Demo mode adds an amber evidence label that stays distinct from the cyan real-action treatment.
+
 ### Image prompt sheet
 
 - Use case: `stylized-concept`
@@ -81,4 +87,3 @@ Using system families keeps the installed app fast and private while retaining a
 - Model: Azure `factory-image` via `/opt/fleet/lib/gen-image.sh`
 - Date: 2026-08-28
 - License: original generated project asset; shipped under the repository MIT license
-
