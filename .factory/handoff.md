@@ -3,7 +3,7 @@
 ## Release status
 
 Repair 2 is complete for the static product. Implementation commit
-`7afbed061a9b4a4056d2ee4f7354897d1b0a1a62` was pushed, built from a clean
+`b35b74bda20f787b474da93cd577c9be6e6b9d3e` was pushed, built from a clean
 checkout, deployed, and verified at
 `https://claim-ready-homebook.sociobot.in` on 5 September 2026. This handoff is
 a later documentation-only change; it does not require another product image.
@@ -77,7 +77,7 @@ and README have no unregistered public behavior claim.
 ## Clean verification
 
 The final candidate was cloned to a new temporary directory at commit
-`7afbed061a9b4a4056d2ee4f7354897d1b0a1a62`. From that checkout:
+`b35b74bda20f787b474da93cd577c9be6e6b9d3e`. From that checkout:
 
 - `npm ci`: passed with the lockfile.
 - `npm audit`: zero vulnerabilities.
@@ -96,7 +96,7 @@ keyboard focus, route history, reduced motion, 200% text, offline update, and
 populated-state accessibility. The offline claim creates and closes its own
 browser context.
 
-Production budgets for the initial route are 43.34 KB JavaScript (15.27 KB
+Production budgets for the initial route are 43.38 KB JavaScript (15.29 KB
 gzip), 20.30 KB CSS (5.46 KB gzip), and a 16.84 KB mobile AVIF hero. PDF
 libraries load only when a PDF is requested.
 
@@ -124,7 +124,7 @@ local build.
   effectively instant. The phone page had no horizontal overflow at 200%
   text.
 - Final mobile Lighthouse 12.8.2: Performance **100**, Accessibility **100**,
-  Best Practices **100**, SEO **100**; FCP **0.905 s**, LCP **1.055 s**, TBT
+  Best Practices **100**, SEO **100**; FCP **1.032 s**, LCP **1.107 s**, TBT
   **0 ms**, CLS **0**.
 
 Live JSON, screenshots, verifier output, Lighthouse JSON, and sequential claim
