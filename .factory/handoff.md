@@ -172,3 +172,16 @@ this repair.
 - The referenced `/work/.evidence/qa-result.json` was not present in the
   worker filesystem. The repository's complete review and verification
   reports through `ddd1d83` were available, read, and dispositioned above.
+
+## Verification 3
+
+Independent verification on 5 September 2026 returned **PASS: zero findings
+and zero untested public claims**. The implementation reviewed was
+`b35b74bda20f787b474da93cd577c9be6e6b9d3e`; the documentation baseline was
+`bfc047b0099315b9e7b16b8968adbc4adf67d025`. A fresh clean checkout passed
+`npm ci`, audit, unit/type/lint/build checks, all ten claim commands separately,
+and the 30-test browser suite. Fresh live desktop/phone checks passed the
+first-screen, demo isolation/reset/start-real, offline reload and CSV export,
+keyboard/focus, 200% text, reduced-motion, route, legal, 404, accessibility,
+metadata, privacy-request, and Lighthouse checks. See
+`.factory/verification-3.md` for the full evidence and earlier-finding table.
