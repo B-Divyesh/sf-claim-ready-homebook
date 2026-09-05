@@ -54,6 +54,8 @@ test('restores focus and keeps a draft when an update notice arrives', async ({ 
 });
 
 test('updates route titles, headings, history focus, and unknown-route content', async ({ page }) => {
+  await page.goto('/demo');
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://claim-ready-homebook.sociobot.in/demo');
   await page.goto('/');
   await page.getByRole('link', { name: 'Export', exact: true }).click();
   await expect(page).toHaveTitle('Export home records — Claim-Ready Homebook');

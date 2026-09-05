@@ -40,7 +40,7 @@ Every public product claim is listed in [`.factory/claims.json`](.factory/claims
 
 Normal records use the `claim-ready-homebook` IndexedDB database. Demo records use `claim-ready-homebook-demo`. **Start for real** clears demo records before opening the normal inventory.
 
-Encryption runs in the browser. PBKDF2-SHA-256 uses 250,000 iterations, a random 16-byte salt, and a user passphrase to derive an AES-256-GCM key. Each export has a random 12-byte IV. The passphrase is never stored and cannot be recovered.
+Encryption runs in the browser. PBKDF2-SHA-256 uses 250,000 iterations, a random 16-byte salt, and a user passphrase to derive an AES-256-GCM key. Each export has a random 12-byte IV. The passphrase is never stored, so keep it somewhere safe.
 
 The app has no account, analytics, advertising, CDN assets, or cloud inventory service. See the in-app `/privacy` and `/terms` pages.
 
@@ -50,9 +50,7 @@ The app has no account, analytics, advertising, CDN assets, or cloud inventory s
 npm run build
 ```
 
-Publish `dist/` as the static site root. The build creates physical route files for `/demo`, `/export`, `/guide`, `/privacy`, and `/terms`. Azure Static Web Apps uses `404.html` for a real 404 response.
-
-The included deployment config sends the CSP and `frame-ancestors` as response headers. Fingerprinted assets receive one-year immutable caching. HTML, the service worker, and other shell files revalidate.
+Publish `dist/` as the static site root. Keep the generated route files and `staticwebapp.config.json` beside `index.html`.
 
 The product brief is in [`.factory/brief.json`](.factory/brief.json). The visual system and asset provenance are in [`.factory/design.md`](.factory/design.md). Demo behavior is in [`.factory/demo.md`](.factory/demo.md).
 
