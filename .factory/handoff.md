@@ -185,3 +185,16 @@ first-screen, demo isolation/reset/start-real, offline reload and CSV export,
 keyboard/focus, 200% text, reduced-motion, route, legal, 404, accessibility,
 metadata, privacy-request, and Lighthouse checks. See
 `.factory/verification-3.md` for the full evidence and earlier-finding table.
+
+## Strict review 2
+
+The fresh strict review on 5 September 2026 returned **PASS: zero findings and
+zero untested public claims**. It reviewed implementation
+`b35b74bda20f787b474da93cd577c9be6e6b9d3e` against documentation baseline
+`7c9d45d11d4485e5cdbb15a81d7e14f9632bb079`. A new clean clone passed install,
+audit, unit/type/lint/build checks, all ten claim commands separately, and the
+30-test browser suite. Fresh live desktop and phone sessions checked the first
+screen, sample isolation/reset/start-real, request privacy, routes and links,
+404, keyboard/focus, offline CSV export, 200% text, reduced motion, Axe, and
+Lighthouse 100/100/100/100. See `.factory/review-2.md`; its supporting files
+are under `/work/.evidence/review-2/`.
