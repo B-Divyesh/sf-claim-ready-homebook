@@ -556,8 +556,11 @@ window.addEventListener('offline', () => { updateConnectionState(); setNotice('Y
 async function start(): Promise<void> {
   try {
     items = await db.list();
-    if (demoMode && !items.length) await resetDemo();
-    else render();
+    if (demoMode && !items.length) {
+      items = await demoSamples();
+      await db.replaceAll(items);
+    }
+    render();
   } catch (error) {
     storageError = error instanceof Error ? error.message : 'This browser blocked private storage.';
     render();
